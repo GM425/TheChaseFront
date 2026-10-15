@@ -3,11 +3,15 @@ import { GameSocket } from './services/game-socket';
 import { Subscription } from 'rxjs';
 import { RouterOutlet } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { Lobby } from './components/lobby/lobby';
+import { Game } from './components/game/game';
+import { RoomService } from './services/room-service';
+import { Room } from './models/room';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, FormsModule],
+  imports: [RouterOutlet, FormsModule, Game],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
@@ -28,13 +32,28 @@ export class App implements OnInit, OnDestroy {
   chaseCardsClaimed = [];
   pot = 0;
   handTotalPot = 0;
+  roomsOpen = signal<Room[]>([]);
+  chosenRoom = '';
 
   private subscriptions = new Subscription();
-
-  constructor(public gameSocket: GameSocket) {}
+  constructor(
+    public gameSocket: GameSocket,
+    public roomService: RoomService,
+  ) {}
 
   ngOnInit(): void {
     this.gameSocket.connect();
+    this.roomService.getRoomsOpen().subscribe({
+      next: (rooms) => {
+        console.log(rooms);
+        this.roomsOpen.set(rooms);
+        console.log('rooms');
+        console.log(this.roomsOpen);
+      },
+      error: (error) => {
+        console.error('FAILED TO GET PLAYERS:', error);
+      },
+    });
 
     this.subscriptions.add(
       this.gameSocket.waitingForPlayers$.subscribe((msg) => {
@@ -63,12 +82,23 @@ export class App implements OnInit, OnDestroy {
   }
 
   joinGame(): void {
-    if (!this.roomId.trim()) {
-      alert('Please enter a room code!');
-      return;
-    }
+    // if (!this.roomId.trim()) {
+    //   console.log();
+    //   alert('Please enter a room code!');
+    //   return;
+    // }
+    this.roomService.getRoomsOpen().subscribe({
+      next: (rooms) => {
+        this.roomsOpen.set(rooms);
+        // this.chosenRoom = this.roomsOpen[0].name;
+        console.log(rooms);
+      },
+      error: (error) => {
+        console.error('FAILED TO GET PLAYERS:', error);
+      },
+    });
 
-    this.gameSocket.joinRoom(this.roomId);
+    this.gameSocket.joinRoom(this.chosenRoom);
   }
 
   takeTurn(): void {

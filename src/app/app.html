@@ -1,9 +1,12 @@
 <main class="main">
 
-<h1>Turn-Based Card Game Prototype</h1>
+<h1>Tfffurn-Based Card Game Prototype</h1>
 
-@if (!gameStarted) {
-  <div id="lobby">
+@if (gameStarted) {
+  <app-game></app-game>
+  <!-- <app-lobby></app-lobby>
+  <p>if ran</p> -->
+  <!-- <div id="lobby">
     <input
       type="text"
       [(ngModel)]="roomId"
@@ -13,19 +16,20 @@
     <button (click)="joinGame()">Join Room</button>
 
     <p>{{ lobbyStatus }}</p>
-  </div>
-} @else {
-  <div id="gameScreen">
-    <h3>{{ turnMessage }}</h3>
+  </div> -->
+  } @else {
+    <p>else ran</p>
 
-    <h2>Shared Score: {{ score }}</h2>
+  <div id="lobby">
+    <input
+      type="text"
+      [(ngModel)]="roomId"
+      placeholder={{chosenRoom}}
+    />
 
-    <button
-      (click)="takeTurn()"
-      [disabled]="!myTurn"
-    >
-      Add +10 Points
-    </button>
+    <button (click)="joinGame()">Join Room</button>
+
+    <p>{{ lobbyStatus }}</p>
   </div>
 }
 
