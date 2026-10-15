@@ -1,0 +1,35 @@
+<main class="main">
+
+<h1>Turn-Based Card Game Prototype</h1>
+
+@if (!gameStarted) {
+  <div id="lobby">
+    <input
+      type="text"
+      [(ngModel)]="roomId"
+      placeholder="Enter Room Code (e.g., 123)"
+    />
+
+    <button (click)="joinGame()">Join Room</button>
+
+    <p>{{ lobbyStatus }}</p>
+  </div>
+} @else {
+  <div id="gameScreen">
+    <h3>{{ turnMessage }}</h3>
+
+    <h2>Shared Score: {{ score }}</h2>
+
+    <button
+      (click)="takeTurn()"
+      [disabled]="!myTurn"
+    >
+      Add +10 Points
+    </button>
+  </div>
+}
+
+</main>
+
+
+<router-outlet />
